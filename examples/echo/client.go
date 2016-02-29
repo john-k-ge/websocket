@@ -8,13 +8,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/url"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/gorilla/websocket"
+	"github.com/john-k-ge/websocket"
 )
 
 var addr = flag.String("addr", "localhost:8080", "http service address")
@@ -34,7 +35,10 @@ func main() {
 		log.Fatal("dial:", err)
 	}
 	defer c.Close()
-
+	///
+	testConn := c.Conn()
+	///
+	fmt.Printf("Does this work? %v\n", testConn.LocalAddr())
 	done := make(chan struct{})
 
 	go func() {

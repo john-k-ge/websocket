@@ -277,6 +277,21 @@ func (c *Conn) RemoteAddr() net.Addr {
 	return c.conn.RemoteAddr()
 }
 
+//// to implement net.Conn interface
+func (c *Conn) Read(msg []byte) (n int, err error) {
+	return c.Read(msg)
+}
+
+func (c *Conn) SetDeadline(t time.Time) error {
+	return c.SetDeadline(t)
+}
+
+func (c *Conn) Write(msg []byte) (n int, err error) {
+	return 0, nil
+}
+
+////
+
 // Write methods
 
 func (c *Conn) write(frameType int, deadline time.Time, bufs ...[]byte) error {
@@ -289,13 +304,13 @@ func (c *Conn) write(frameType int, deadline time.Time, bufs ...[]byte) error {
 		c.closeSent = true
 	}
 
-	c.conn.SetWriteDeadline(deadline)
+	c.SetWriteDeadline(deadline)
 	for _, buf := range bufs {
 		if len(buf) > 0 {
-			n, err := c.conn.Write(buf)
+			n, err := c.Write(buf)
 			if n != len(buf) {
 				// Close on partial write.
-				c.conn.Close()
+				c.Close()
 			}
 			if err != nil {
 				return err
