@@ -1,0 +1,34 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;websocket&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../.DS_Store" />
+      <root url="file://$PROJECT_DIR$/../../../github.build.ge.com" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org" />
+      <root url="file://$PROJECT_DIR$/../.." />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/.git" />
+      <root url="file://$PROJECT_DIR$/../../../github.build.ge.com/predix-data-services/time-series-ingestion-tool/Godeps/_workspace" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org/x/crypto/sha3/testdata" />
+      <root url="file://$PROJECT_DIR$/../chisel/.idea" />
+      <root url="file://$PROJECT_DIR$/../../jpillora/backoff/.git" />
+      <root url="file://$PROJECT_DIR$/../../../github.build.ge.com/predix-data-services/time-series-ingestion-tool/.git" />
+      <root url="file://$PROJECT_DIR$/../../gorilla/websocket/.git" />
+      <root url="file://$PROJECT_DIR$/.idea" />
+      <root url="file://$PROJECT_DIR$/.git" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/html/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../github.build.ge.com/212359308/littlebird/.git" />
+      <root url="file://$PROJECT_DIR$/../../jpillora/chisel/.git" />
+      <root url="file://$PROJECT_DIR$/../../shirou/gopsutil/.git" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org/x/crypto/ssh/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/http2/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org/x/crypto/.git" />
+      <root url="file://$PROJECT_DIR$/../../cloudfoundry/gosigar/.git" />
+      <root url="file://$PROJECT_DIR$/../chisel/.git" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/html/charset/testdata" />
+      <root url="file://$PROJECT_DIR$" />
+    </excluded>
+  </library>
+</component>

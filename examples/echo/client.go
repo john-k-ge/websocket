@@ -35,10 +35,8 @@ func main() {
 		log.Fatal("dial:", err)
 	}
 	defer c.Close()
-	///
-	testConn := c.Conn()
-	///
-	fmt.Printf("Does this work? %v\n", testConn.LocalAddr())
+
+	fmt.Printf("Does this work? %v\n", c.LocalAddr())
 	done := make(chan struct{})
 
 	go func() {

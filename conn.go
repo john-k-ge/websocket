@@ -14,6 +14,7 @@ import (
 	"net"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 const (
@@ -277,17 +278,24 @@ func (c *Conn) RemoteAddr() net.Addr {
 	return c.conn.RemoteAddr()
 }
 
+
+
 //// to implement net.Conn interface
-func (c *Conn) Read(msg []byte) (n int, err error) {
-	return c.Read(msg)
+func (c *Conn) SetDeadline(t time.Time) error {
+	return c.conn.SetDeadline(t)
 }
 
-func (c *Conn) SetDeadline(t time.Time) error {
-	return c.SetDeadline(t)
+func (c *Conn) Read(msg []byte) (n int, err error) {
+	_, msg, err = c.ReadMessage()
+	if err != nil {
+		fmt.Errorf("Conn.Read(): %v", err)
+	}
+	return len(msg), err
 }
 
 func (c *Conn) Write(msg []byte) (n int, err error) {
-	return 0, nil
+	err = c.WriteMessage(TextMessage, msg)
+	return len(msg), err
 }
 
 ////
