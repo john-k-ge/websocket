@@ -315,7 +315,7 @@ func (c *Conn) write(frameType int, deadline time.Time, bufs ...[]byte) error {
 	c.SetWriteDeadline(deadline)
 	for _, buf := range bufs {
 		if len(buf) > 0 {
-			n, err := c.Write(buf)
+			n, err := c.conn.Write(buf)
 			if n != len(buf) {
 				// Close on partial write.
 				c.Close()
@@ -469,16 +469,20 @@ func (c *Conn) flushFrame(final bool, extra []byte) error {
 	// concurrent writes. See the concurrency section in the package
 	// documentation for more info.
 
+	fmt.Println("In flushFrame(), about to check isWriting()")
 	if c.isWriting {
 		panic("concurrent write to websocket connection")
 	}
+	fmt.Println("In flushFrame(), about to set isWriting() = true")
 	c.isWriting = true
 
 	c.writeErr = c.write(c.writeFrameType, c.writeDeadline, c.writeBuf[framePos:c.writePos], extra)
 
+	fmt.Println("In flushFrame(), about to check isWriting() again")
 	if !c.isWriting {
 		panic("concurrent write to websocket connection")
 	}
+	fmt.Println("In flushFrame(), about to set isWriting() = false")
 	c.isWriting = false
 
 	// Setup for next frame.

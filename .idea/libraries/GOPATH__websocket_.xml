@@ -11,6 +11,7 @@
     <excluded>
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/.git" />
       <root url="file://$PROJECT_DIR$/../../../github.build.ge.com/predix-data-services/time-series-ingestion-tool/Godeps/_workspace" />
+      <root url="file://$PROJECT_DIR$/../../tools/godep/Godeps/_workspace" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/crypto/sha3/testdata" />
       <root url="file://$PROJECT_DIR$/../chisel/.idea" />
       <root url="file://$PROJECT_DIR$/../../jpillora/backoff/.git" />
@@ -23,6 +24,7 @@
       <root url="file://$PROJECT_DIR$/../../jpillora/chisel/.git" />
       <root url="file://$PROJECT_DIR$/../../shirou/gopsutil/.git" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/crypto/ssh/testdata" />
+      <root url="file://$PROJECT_DIR$/../../tools/godep/.git" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/http2/testdata" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/crypto/.git" />
       <root url="file://$PROJECT_DIR$/../../cloudfoundry/gosigar/.git" />
