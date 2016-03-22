@@ -17,11 +17,14 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"fmt"
 )
 
 // ErrBadHandshake is returned when the server response to opening handshake is
 // invalid.
 var ErrBadHandshake = errors.New("websocket: bad handshake")
+
+var logger = NewLogger("websocket", true)
 
 // NewClient creates a new client connection using the given net connection.
 // The URL u specifies the host and request URI. Use requestHeader to specify
@@ -73,6 +76,7 @@ type Dialer struct {
 }
 
 var errMalformedURL = errors.New("malformed ws or wss URL")
+
 
 // parseURL parses the URL.
 //
@@ -140,6 +144,7 @@ func hostPortNoPort(u *url.URL) (hostPort, hostNoPort string) {
 // DefaultDialer is a dialer with all fields set to the default zero values.
 var DefaultDialer = &Dialer{
 	Proxy: http.ProxyFromEnvironment,
+	Subprotocols: []string {"chisel-v2"},
 }
 
 // Dial creates a new client connection. Use requestHeader to specify the
@@ -152,6 +157,9 @@ var DefaultDialer = &Dialer{
 // etcetera. The response body may not contain the entire response and does not
 // need to be closed by the application.
 func (d *Dialer) Dial(urlStr string, requestHeader http.Header) (*Conn, *http.Response, error) {
+
+
+	logger.Infof("About to dial...")
 
 	if d == nil {
 		d = &Dialer{
@@ -224,7 +232,7 @@ func (d *Dialer) Dial(urlStr string, requestHeader http.Header) (*Conn, *http.Re
 	hostPort, hostNoPort := hostPortNoPort(u)
 
 	var proxyURL *url.URL
-	// Check wether the proxy method has been configured
+	// Check whether the proxy method has been configured
 	if d.Proxy != nil {
 		proxyURL, err = d.Proxy(req)
 	}
@@ -244,19 +252,29 @@ func (d *Dialer) Dial(urlStr string, requestHeader http.Header) (*Conn, *http.Re
 		deadline = time.Now().Add(d.HandshakeTimeout)
 	}
 
+
 	netDial := d.NetDial
 	if netDial == nil {
+		logger.Infof("netDial was nil; initializing")
 		netDialer := &net.Dialer{Deadline: deadline}
 		netDial = netDialer.Dial
 	}
 
+
+	logger.Debugf("About to netDial: %v\n", targetHostPort)
+
 	netConn, err := netDial("tcp", targetHostPort)
+
+	logger.Debugf("I netDialed\n")
+
 	if err != nil {
+		logger.Debugf("netDial failed")
 		return nil, nil, err
 	}
 
 	defer func() {
 		if netConn != nil {
+			logger.Debugf("Closing netConn\n")
 			netConn.Close()
 		}
 	}()
@@ -266,6 +284,7 @@ func (d *Dialer) Dial(urlStr string, requestHeader http.Header) (*Conn, *http.Re
 	}
 
 	if proxyURL != nil {
+		fmt.Println("Proxy URL is non-null")
 		connectHeader := make(http.Header)
 		if user := proxyURL.User; user != nil {
 			proxyUser := user.Username()
@@ -318,9 +337,12 @@ func (d *Dialer) Dial(urlStr string, requestHeader http.Header) (*Conn, *http.Re
 		}
 	}
 
+
+	logger.Infof("About to call newConn")
 	conn := newConn(netConn, false, d.ReadBufferSize, d.WriteBufferSize)
 
 	if err := req.Write(netConn); err != nil {
+		logger.Infof("Failed to write")
 		return nil, nil, err
 	}
 
@@ -328,6 +350,9 @@ func (d *Dialer) Dial(urlStr string, requestHeader http.Header) (*Conn, *http.Re
 	if err != nil {
 		return nil, nil, err
 	}
+
+	logger.Infof("I got resp.StatusCode = %v\n", resp.StatusCode)
+
 	if resp.StatusCode != 101 ||
 		!strings.EqualFold(resp.Header.Get("Upgrade"), "websocket") ||
 		!strings.EqualFold(resp.Header.Get("Connection"), "upgrade") ||

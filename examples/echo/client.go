@@ -58,24 +58,25 @@ func main() {
 	for {
 		select {
 		case t := <-ticker.C:
-			err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
+		//err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
+			_, err := c.Write([]byte(t.String()))
 			if err != nil {
 				log.Println("write:", err)
 				return
 			}
 		case <-interrupt:
 			log.Println("interrupt")
-			// To cleanly close a connection, a client should send a close
-			// frame and wait for the server to close the connection.
+		// To cleanly close a connection, a client should send a close
+		// frame and wait for the server to close the connection.
 			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
 				log.Println("write close:", err)
 				return
 			}
-			select {
-			case <-done:
-			case <-time.After(time.Second):
-			}
+				select {
+				case <-done:
+				case <-time.After(time.Second):
+				}
 			c.Close()
 			return
 		}

@@ -287,22 +287,34 @@ func (c *Conn) SetDeadline(t time.Time) error {
 
 func (c *Conn) Read(msg []byte) (n int, err error) {
 	_, msg, err = c.ReadMessage()
+	fmt.Printf("websocket/conn.go::Read() -- Read: %s \n", msg)
 	if err != nil {
 		fmt.Errorf("Conn.Read(): %v", err)
 	}
+	fmt.Printf("websocket/conn.go::Read() -- Len(): %v \n", len(msg))
 	return len(msg), err
 }
 
 func (c *Conn) Write(msg []byte) (n int, err error) {
+	//deleteMe
+	fmt.Printf("websocket/conn.go::Write() -- msg: %s \n", msg)
+	//deleteMe
+
 	err = c.WriteMessage(TextMessage, msg)
+	//err = c.WriteMessage(BinaryMessage, msg)
 	return len(msg), err
 }
-
 ////
+
 
 // Write methods
 
 func (c *Conn) write(frameType int, deadline time.Time, bufs ...[]byte) error {
+
+	//deleteMe
+	fmt.Println("websocket/conn.go::write()")
+	//deleteMe
+
 	<-c.mu
 	defer func() { c.mu <- true }()
 
@@ -315,7 +327,17 @@ func (c *Conn) write(frameType int, deadline time.Time, bufs ...[]byte) error {
 	c.SetWriteDeadline(deadline)
 	for _, buf := range bufs {
 		if len(buf) > 0 {
+
+			//deleteMe
+			fmt.Printf("websocket/conn.go::write() -- buf: %s\n", buf)
+			//deleteMe
+
 			n, err := c.conn.Write(buf)
+
+			//deleteMe
+			fmt.Printf("websocket/conn.go::write() -- n: %v, len(buf): %v\n", n, len(buf))
+			//deleteMe
+
 			if n != len(buf) {
 				// Close on partial write.
 				c.Close()
@@ -393,6 +415,9 @@ func (c *Conn) WriteControl(messageType int, data []byte, deadline time.Time) er
 // There can be at most one open writer on a connection. NextWriter closes the
 // previous writer if the application has not already done so.
 func (c *Conn) NextWriter(messageType int) (io.WriteCloser, error) {
+
+
+
 	if c.writeErr != nil {
 		return nil, c.writeErr
 	}
@@ -408,6 +433,11 @@ func (c *Conn) NextWriter(messageType int) (io.WriteCloser, error) {
 	}
 
 	c.writeFrameType = messageType
+
+	//deleteMe
+	fmt.Println("websocket/conn.go::NextWriter() -- about to return messageWriter{} struct")
+	//deleteMe
+
 	return messageWriter{c, c.writeSeq}, nil
 }
 
@@ -512,7 +542,17 @@ func (w messageWriter) err() error {
 }
 
 func (w messageWriter) ncopy(max int) (int, error) {
+
+	//deleteMe
+	fmt.Println("websocket/conn.go::ncopy() -- checking len(p) and stuff")
+	//deleteMe
+
 	n := len(w.c.writeBuf) - w.c.writePos
+
+	//deleteMe
+	fmt.Printf("websocket/conn.go::ncopy() -- max:%v, n:%v\n", max, n)
+	//deleteMe
+
 	if n <= 0 {
 		if err := w.c.flushFrame(false, nil); err != nil {
 			return 0, err
@@ -522,15 +562,31 @@ func (w messageWriter) ncopy(max int) (int, error) {
 	if n > max {
 		n = max
 	}
+
+	//deleteMe
+	fmt.Printf("websocket/conn.go::ncopy() -- returning n:%v\n", n)
+	//deleteMe
+
 	return n, nil
 }
 
 func (w messageWriter) write(final bool, p []byte) (int, error) {
+
+	//deleteMe
+	fmt.Println("websocket/conn.go::write() -- entering")
+	//deleteMe
+
 	if err := w.err(); err != nil {
 		return 0, err
 	}
 
 	if len(p) > 2*len(w.c.writeBuf) && w.c.isServer {
+
+		//deleteMe
+		fmt.Println("websocket/conn.go::write() -- checking len(p) and stuff")
+		fmt.Printf("websocket/conn.go::write() -- %v - %v", final, len(p))
+		//deleteMe
+
 		// Don't buffer large messages.
 		err := w.c.flushFrame(final, p)
 		if err != nil {
@@ -609,6 +665,11 @@ func (w messageWriter) Close() error {
 // WriteMessage is a helper method for getting a writer using NextWriter,
 // writing the message and closing the writer.
 func (c *Conn) WriteMessage(messageType int, data []byte) error {
+
+	//deleteMe
+	fmt.Printf("websocket/conn.go::WriteMessage() -- data: %s", data)
+	//deleteMe
+
 	wr, err := c.NextWriter(messageType)
 	if err != nil {
 		return err

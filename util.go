@@ -11,7 +11,42 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"fmt"
+	"log"
+	"os"
 )
+
+type Logger struct {
+	prefix                    string
+	logger                    *log.Logger
+	InfoEnabled, DebugEnabled bool
+}
+
+func NewLogger(prefix string, debug bool) *Logger {
+	l := &Logger{
+		prefix: prefix,
+		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+		InfoEnabled: true,
+		DebugEnabled: debug,
+	}
+	return l
+}
+
+func (l *Logger) Infof(f string, args ...interface{}) {
+	if l.InfoEnabled {
+		l.logger.Printf(l.prefix+": "+f, args...)
+	}
+}
+
+func (l *Logger) Debugf(f string, args ...interface{}) {
+	if l.DebugEnabled {
+		l.logger.Printf(l.prefix+": "+f, args...)
+	}
+}
+
+func (l *Logger) Errorf(f string, args ...interface{}) error {
+	return fmt.Errorf(l.prefix+": "+f, args...)
+}
 
 // tokenListContainsValue returns true if the 1#token header with the given
 // name contains token.

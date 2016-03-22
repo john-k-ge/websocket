@@ -12,7 +12,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/websocket"
+	//"github.com/gorilla/websocket"
+	"github.com/john-k-ge/websocket"
+	"io"
 )
 
 var addr = flag.String("addr", "localhost:8080", "http service address")
@@ -25,8 +27,12 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
+
 	defer c.Close()
 	for {
+		var reader io.Reader
+		_, r, err = c.NextReader()
+
 		mt, message, err := c.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
